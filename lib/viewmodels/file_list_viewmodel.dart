@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:storage_lens/models/file_category.dart';
 import 'package:storage_lens/models/file_item.dart';
@@ -7,16 +6,21 @@ import 'package:storage_lens/viewmodels/home_viewmodel.dart';
 
 part 'file_list_viewmodel.g.dart';
 
-/// State for the FileListViewModel, holding the files and current sort mode.
+/// State for the [FileListViewModel], holding the current file list and sort mode.
 class FileListState {
+  /// Creates a [FileListState] with the provided [files] and [sortMode].
   const FileListState({
     required this.files,
     required this.sortMode,
   });
 
+  /// The list of files currently being displayed.
   final List<FileItem> files;
+
+  /// The active sort mode applied to [files].
   final SortMode sortMode;
 
+  /// Returns a copy of this state with the given fields replaced.
   FileListState copyWith({
     List<FileItem>? files,
     SortMode? sortMode,
@@ -36,11 +40,11 @@ class FileListState {
 @riverpod
 class FileListViewModel extends _$FileListViewModel {
   @override
-  FutureOr<FileListState> build(FileCategory category) async {
+  Future<FileListState> build(FileCategory category) async {
     // Watch the home view model to get the initial list of files
     // when the summary is updated.
     final summaryAsync = ref.watch(homeViewModelProvider);
-    
+
     final files = summaryAsync.maybeWhen(
       data: (summary) => summary.filesForCategory(category, mode: SortMode.bySize),
       orElse: () => <FileItem>[],
@@ -52,20 +56,18 @@ class FileListViewModel extends _$FileListViewModel {
     );
   }
 
-  /// Changes the sort mode and re-sorts the files.
+  /// Changes the sort mode and re-sorts the current file list.
   void setSortMode(SortMode mode) {
     final currentState = state.valueOrNull;
     if (currentState == null) return;
 
     final sortedFiles = List<FileItem>.from(currentState.files);
-    
+
     switch (mode) {
       case SortMode.bySize:
         sortedFiles.sort((a, b) => b.sizeBytes.compareTo(a.sizeBytes));
-        break;
       case SortMode.byDate:
         sortedFiles.sort((a, b) => b.modifiedAt.compareTo(a.modifiedAt));
-        break;
     }
 
     state = AsyncValue.data(
@@ -76,7 +78,7 @@ class FileListViewModel extends _$FileListViewModel {
     );
   }
 
-  /// Deletes a file from the file system, the database, and the current state.
+  /// Deletes a file from the file system, the database cache, and the UI state.
   Future<void> deleteFile(FileItem file) async {
     final currentState = state.valueOrNull;
     if (currentState == null) return;
@@ -96,15 +98,7 @@ class FileListViewModel extends _$FileListViewModel {
         ..removeWhere((f) => f.id == file.id);
 
       state = AsyncValue.data(currentState.copyWith(files: updatedFiles));
-
-      // Note: A full implementation might also want to update the 
-      // HomeViewModel's StorageSummary to reflect the freed space without 
-      // requiring a full rescan. For this portfolio scope, deleting from
-      // this view and letting the user tap "Rescan" on home is acceptable.
     } catch (e, st) {
-      // In a real app, you might want to show a snackbar here via a 
-      // side-effect stream or by re-throwing if the UI is catching it.
-      // For simplicity, we just set the error state.
       state = AsyncValue.error(e, st);
     }
   }

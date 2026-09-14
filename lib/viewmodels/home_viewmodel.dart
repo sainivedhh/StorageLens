@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:storage_lens/models/file_item.dart';
 import 'package:storage_lens/models/storage_summary.dart';
 import 'package:storage_lens/services/android_storage_service.dart';
 import 'package:storage_lens/services/database_service.dart';
