@@ -1,7 +1,5 @@
 # StorageLens
 
-![StorageLens CI](https://github.com/sainivedhh/storagelens/actions/workflows/ci.yml/badge.svg)
-
 A cross-platform storage management tool built with Flutter for Android and Windows Desktop. StorageLens helps users quickly identify what is taking up space on their device by categorizing files and visualising storage usage.
 
 *Note: Screenshots will be added here once the app is deployed to a physical device.*
