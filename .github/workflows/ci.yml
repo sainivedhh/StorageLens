@@ -1,0 +1,67 @@
+name: StorageLens CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze_and_test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x' # Use the latest stable
+          channel: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # In a real project with code generation, we would run build_runner here.
+      # For CI purposes, it's generally best practice to check generated files
+      # into source control OR generate them in CI before analyzing.
+      - name: Generate Riverpod code
+        run: dart run build_runner build -d
+
+      - name: Analyze Code
+        # --fatal-infos ensures portfolio-quality strictness
+        run: flutter analyze --fatal-infos
+
+      - name: Run Tests
+        run: flutter test
+
+  build_apk:
+    name: Build Android APK
+    needs: analyze_and_test
+    # Only build the APK on push to main, not on PRs (to save CI minutes)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Generate Riverpod code
+        run: dart run build_runner build -d
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7

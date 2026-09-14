@@ -1,0 +1,64 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:label="StorageLens"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!-- =========================================================
+         STORAGE PERMISSIONS
+         =========================================================
+
+         Android 13+ (API 33): Granular media permissions.
+         These are preferred over the broad READ_EXTERNAL_STORAGE
+         which is deprecated from API 33 onward.
+    -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!--
+         Android 12 and below (API <= 32): Broad storage read.
+         maxSdkVersion ensures it's NOT requested on API 33+.
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!--
+         MANAGE_EXTERNAL_STORAGE: Required for full filesystem scan
+         (e.g. PDFs, ZIPs, arbitrary files in Downloads).
+
+         WARNING: This permission triggers a manual Google Play Store
+         review. If submitting to Play Store, either:
+           a) Remove this and scope to READ_MEDIA_* only, OR
+           b) Provide a compelling justification for "All Files Access"
+              in the Data Safety form.
+
+         For a portfolio / sideloaded app, this is acceptable.
+         See: https://support.google.com/googleplay/android-developer/answer/10467955
+    -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+</manifest>

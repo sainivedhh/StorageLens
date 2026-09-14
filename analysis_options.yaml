@@ -1,0 +1,27 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    # Exclude generated Riverpod files from analysis
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  errors:
+    # Treat missing return types as errors
+    missing_return: error
+
+linter:
+  rules:
+    # very_good_analysis already enables most rules.
+    # Project-specific overrides below:
+
+    # Allow print() in service layer for debug scanning output
+    avoid_print: false
+
+    # Require docs on all public members — portfolio quality
+    public_member_api_docs: true
+
+    # Allow non-const constructors in widget builds (common pattern)
+    prefer_const_constructors: true
+
+    # Require named parameters for constructors with >= 3 positional params
+    always_use_package_imports: true
