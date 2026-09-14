@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:storage_lens/models/file_category.dart';
 import 'package:storage_lens/models/file_item.dart';
