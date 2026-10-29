@@ -44,7 +44,8 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.icon(
-                  onPressed: () => ref.read(homeViewModelProvider.notifier).rescan(),
+                  onPressed: () =>
+                      ref.read(homeViewModelProvider.notifier).rescan(),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Try Again'),
                 ),
@@ -61,7 +62,10 @@ class HomeScreen extends ConsumerWidget {
                   Icon(
                     Icons.storage_rounded,
                     size: 80,
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withOpacity(0.5),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -93,9 +97,10 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       Text(
                         'Total Used: ${_formatBytes(summary.totalBytes)}',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -109,13 +114,15 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.only(bottom: 80), // Fab space
+                padding: const EdgeInsets.only(bottom: 80),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final category = FileCategory.values[index];
-                      final bytes = summary.bytesPerCategory[category] ?? 0;
-                      final count = summary.filesPerCategory[category]?.length ?? 0;
+                      final bytes =
+                          summary.bytesPerCategory[category] ?? 0;
+                      final count =
+                          summary.filesPerCategory[category]?.length ?? 0;
 
                       return CategoryCard(
                         category: category,
@@ -123,8 +130,9 @@ class HomeScreen extends ConsumerWidget {
                         fileCount: count,
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => FileListScreen(category: category),
+                            MaterialPageRoute<void>(
+                              builder: (context) =>
+                                  FileListScreen(category: category),
                             ),
                           );
                         },
@@ -150,7 +158,7 @@ class HomeScreen extends ConsumerWidget {
     if (bytes <= 0) return '0 B';
     const suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
     var i = 0;
-    double d = bytes.toDouble();
+    var d = bytes.toDouble();
     while (d >= 1024 && i < suffixes.length - 1) {
       d /= 1024;
       i++;
