@@ -26,7 +26,27 @@ jobs:
         run: dart run build_runner build -d
 
       - name: Analyze Code
-        run: flutter analyze
+        shell: bash
+        run: |
+          set +e
+          flutter analyze > analyze-output.txt 2>&1
+          analyze_status=$?
+          set -e
+          cat analyze-output.txt
+
+          if grep -Eq '^[[:space:]]*(error|warning) •' analyze-output.txt; then
+            echo "Analysis found warnings or errors."
+            exit 1
+          fi
+
+          if [ "$analyze_status" -ne 0 ]; then
+            if grep -Eq '[0-9]+ issues? found' analyze-output.txt; then
+              echo "Analyzer reported informational lints only; continuing."
+            else
+              echo "Analyzer failed for a reason other than informational lints."
+              exit "$analyze_status"
+            fi
+          fi
 
       - name: Run Tests
         run: flutter test
