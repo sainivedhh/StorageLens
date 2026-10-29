@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:storage_lens/models/file_item.dart';
 import 'package:storage_lens/models/storage_summary.dart';
 import 'package:storage_lens/services/android_storage_service.dart';
 import 'package:storage_lens/services/database_service.dart';
@@ -26,7 +27,7 @@ StorageService storageService(StorageServiceRef ref) {
     return AndroidStorageService();
   } else {
     // Fallback stub for unsupported platforms.
-    return WindowsStorageService(); 
+    return WindowsStorageService();
   }
 }
 
@@ -43,7 +44,7 @@ class HomeViewModel extends _$HomeViewModel {
   @override
   FutureOr<StorageSummary> build() async {
     final db = ref.watch(databaseServiceProvider);
-    
+
     // 1. Initialize the database (safe to call multiple times)
     await db.init();
 
@@ -62,7 +63,7 @@ class HomeViewModel extends _$HomeViewModel {
   /// Initiates a new file system scan.
   Future<void> rescan() async {
     state = const AsyncValue.loading();
-    
+
     try {
       final storage = ref.read(storageServiceProvider);
       final db = ref.read(databaseServiceProvider);
@@ -70,15 +71,18 @@ class HomeViewModel extends _$HomeViewModel {
       // 1. Request permissions
       final hasPermission = await storage.requestPermissions();
       if (!hasPermission) {
-        state = AsyncValue.error('Storage permission denied', StackTrace.current);
+        state = AsyncValue.error(
+          'Storage permission denied',
+          StackTrace.current,
+        );
         return;
       }
 
       // 2. Prepare database for new scan
       final runId = await db.startNewScan();
-      
-      final List<FileItem> allFiles = [];
-      final List<FileItem> batch = [];
+
+      final allFiles = <FileItem>[];
+      final batch = <FileItem>[];
       const batchSize = 500;
 
       // 3. Scan storage and batch insert to database
@@ -103,7 +107,6 @@ class HomeViewModel extends _$HomeViewModel {
       // 5. Update state with new summary
       final summary = StorageSummary.fromItems(allFiles);
       state = AsyncValue.data(summary);
-
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
