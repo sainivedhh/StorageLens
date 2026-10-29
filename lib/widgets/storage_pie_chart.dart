@@ -41,7 +41,8 @@ class _StoragePieChartState extends State<StoragePieChart> {
                   touchedIndex = -1;
                   return;
                 }
-                touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                touchedIndex =
+                    pieTouchResponse.touchedSection!.touchedSectionIndex;
               });
             },
           ),
@@ -59,14 +60,13 @@ class _StoragePieChartState extends State<StoragePieChart> {
       final isTouched = i == touchedIndex;
       final radius = isTouched ? 60.0 : 50.0;
       final fontSize = isTouched ? 16.0 : 12.0;
-      
+
       final category = FileCategory.values[i];
       final value = widget.summary.fractionForCategory(category);
-      final bytes = widget.summary.bytesPerCategory[category] ?? 0;
-      
+
       // Don't show sections for empty categories
       if (value == 0) {
-         return PieChartSectionData(value: 0, radius: 0, title: '');
+        return PieChartSectionData(value: 0, radius: 0, title: '');
       }
 
       return PieChartSectionData(
